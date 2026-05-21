@@ -1,61 +1,68 @@
-# BundleIQ — South Africa Data Bundle Comparison App
+# BundleIQ
 
-A full-stack web application that compares prepaid data bundle prices across all 4 major South African mobile networks in real time.
+A full-stack web application that compares prepaid data bundle prices across all 4 major South African mobile networks. Built to help South Africans stop overpaying for mobile data.
 
-## Networks Covered
+## Live Demo
 
-- Vodacom
-- MTN
-- Cell C
-- Telkom
+- **App:** https://bundleiq.onrender.com
+- **API:** https://bundleiq-api.onrender.com/bundles
+- **Admin:** https://bundleiq.onrender.com/admin.html
 
-## Features
+## What It Does
 
-- Compare data bundles across all 4 networks
-- Filter by bundle type — Monthly, Daily, Weekly, Night, Social, NXT LVL, Hourly
+- Compares data bundles across Vodacom, MTN, Cell C and Telkom
+- Sorts results by best value — lowest cost per MB first
+- Filters by bundle type: Monthly, Daily, Weekly, Night, Social, NXT LVL, Hourly
 - Search by data size, network or bundle name
-- Ranked results sorted by best value (cost per MB)
-- Summary cards showing best deal, most data, best validity and savings percentage
-- Dark mode toggle with saved preference
+- Shows summary cards: best deal, most data, best validity, savings percentage
+- Dark mode toggle that remembers your preference
 - Admin panel to add, edit or delete bundles
 - Auto scraper that runs every day at 7AM to keep prices updated
-- Fully responsive — works on mobile and desktop
+- Fully responsive on mobile and desktop
+
+## Screenshots
+
+> App running at https://bundleiq.onrender.com
 
 ## Tech Stack
 
-### Backend
+**Backend**
 - Python 3
 - Flask
 - Flask-SQLAlchemy
 - Flask-CORS
-- PostgreSQL
-- psycopg2
+- PostgreSQL (Supabase)
+- psycopg2-binary
 - python-dotenv
 - BeautifulSoup4
 - Requests
+- Gunicorn
 
-### Frontend
+**Frontend**
 - HTML5
 - CSS3
 - Vanilla JavaScript
 - Font Awesome 6 icons
+
+**Infrastructure**
+- Supabase — cloud PostgreSQL database (Frankfurt)
+- Render — backend and frontend hosting
+- GitHub — version control
 
 ## Project Structure
 
 ```
 bundleiq/
     backend/
-        run.py          — Flask app and API routes
-        models.py       — Database models
-        config.py       — Configuration
-        seed_real.py    — Seed database with real SA bundle prices
-        scraper.py      — Auto scraper that updates prices daily
-        updater.py      — Manual price updater
-        .env            — Environment variables (not committed to git)
-        requirements.txt
+        run.py              Flask app and all API routes
+        scraper.py          Auto scraper — runs daily at 7AM
+        updater.py          Manual price updater
+        seed_real.py        Seeds database with real SA bundle prices
+        requirements.txt    Python dependencies
+        .env                Environment variables (not committed)
     frontend/
-        index.html      — Main comparison app
-        admin.html      — Admin panel to manage bundles
+        index.html          Main comparison app
+        admin.html          Admin panel — password protected
     README.md
 ```
 
@@ -64,16 +71,17 @@ bundleiq/
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | /bundles | Get all bundles |
+| GET | / | API health check |
 | POST | /admin/bundle | Add a new bundle |
-| PUT | /admin/bundle/<id> | Update a bundle |
-| DELETE | /admin/bundle/<id> | Delete a bundle |
+| PUT | /admin/bundle/\<id\> | Update a bundle by ID |
+| DELETE | /admin/bundle/\<id\> | Delete a bundle by ID |
 
-## Setup Instructions
+## Local Setup
 
-### 1. Clone the project
+### 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/bundleiq.git
+git clone https://github.com/Kgaogelo02/bundleiq.git
 cd bundleiq
 ```
 
@@ -88,7 +96,7 @@ venv\Scripts\activate
 ### 3. Install dependencies
 
 ```bash
-pip install flask flask-sqlalchemy flask-cors psycopg2-binary python-dotenv beautifulsoup4 requests lxml
+pip install -r requirements.txt
 ```
 
 ### 4. Create .env file
@@ -96,47 +104,73 @@ pip install flask flask-sqlalchemy flask-cors psycopg2-binary python-dotenv beau
 Create a file called `.env` inside the `backend` folder:
 
 ```
-DATABASE_URL=postgresql://postgres:yourpassword@localhost:5432/bundleiq_db
+DATABASE_URL=postgresql://your_user:your_password@your_host:5432/your_db
 ```
 
-### 5. Create the database
-
-Open pgAdmin and create a database called `bundleiq_db`.
-
-### 6. Run the app
+### 5. Run the backend
 
 ```bash
 python run.py
 ```
 
-### 7. Seed the database
+### 6. Seed the database
 
 ```bash
 python seed_real.py
 ```
 
-### 8. Open the frontend
+### 7. Open the frontend
 
-Open `frontend/index.html` in your browser.
+Open `frontend/index.html` in your browser using Ctrl+O.
+
+## Deployment
+
+### Backend — Render Web Service
+- Runtime: Python 3
+- Root Directory: `backend`
+- Build Command: `pip install -r requirements.txt`
+- Start Command: `gunicorn run:app`
+- Environment Variable: `DATABASE_URL`
+
+### Frontend — Render Static Site
+- Root Directory: `frontend`
+- Build Command: leave empty
+- Publish Directory: `.`
+
+### Database — Supabase
+- Free PostgreSQL in the cloud
+- Region: Frankfurt EU Central
+- Connection: Session Pooler (IPv4 compatible)
 
 ## Automatic Price Updates
 
-The scraper runs automatically every day at 7AM via Windows Task Scheduler.
+A Windows Scheduled Task runs `scraper.py` every day at 7AM automatically.
 
-To run it manually:
+To run the scraper manually:
 
 ```bash
-python scraper.py
+python backend/scraper.py
 ```
 
 ## Admin Panel
 
-Open `frontend/admin.html` to:
+Access at `/admin.html` — password protected.
 
-- View all bundles
-- Add new bundles
-- Edit existing bundle prices
+Features:
+- View all bundles with stats per network
+- Add new bundles with automatic cost per MB calculation
+- Edit any bundle price, name, validity or type
 - Delete outdated bundles
+- Search and filter bundles
+
+## Networks Covered
+
+| Network | Known For |
+|---------|-----------|
+| Vodacom | SA's largest network, NXT LVL specials |
+| MTN | Strong promos, TikTok and night bundles |
+| Cell C | Budget friendly monthly bundles |
+| Telkom | Cheapest cost per GB in SA |
 
 ## Environment Variables
 
@@ -146,8 +180,12 @@ Open `frontend/admin.html` to:
 
 ## Author
 
-Built by Mabutsi Kgaogelo— BundleIQ helps South Africans find the best data deals and stop overpaying for mobile data.
+**Mabutsi Kgaogelo**
+
+Built BundleIQ to solve a real problem — South Africans constantly compare data prices but had no clean tool to do it in one place.
+
+- GitHub: https://github.com/Kgaogelo02
 
 ## License
 
-MIT License
+MIT License — free to use and modify.
