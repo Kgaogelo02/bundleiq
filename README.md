@@ -146,7 +146,7 @@ Open `frontend/admin.html` to:
 
 ## Author
 
-Built by Mitchelle — BundleIQ helps South Africans find the best data deals and stop overpaying for mobile data.
+Built by Mabutsi Kgaogelo— BundleIQ helps South Africans find the best data deals and stop overpaying for mobile data.
 
 ## License
 
