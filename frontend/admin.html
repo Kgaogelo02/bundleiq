@@ -245,7 +245,14 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  const API = 'https://bundleiq-api.onrender.com';
+  const API = "https://bundleiq-api.onrender.com";
+  const ADMIN_PASSWORD = "bundleiq2026";
+  const stored = sessionStorage.getItem("bundleiq-auth");
+  if(stored !== "true"){
+    const pwd = prompt("Enter admin password:");
+    if(pwd !== ADMIN_PASSWORD){ document.body.innerHTML = "<h2 style=padding:2rem;font-family:sans-serif>Access denied.</h2>"; throw new Error("Unauthorized"); }
+    sessionStorage.setItem("bundleiq-auth","true");
+  }
   let allBundles = [];
   let formVisible = true;
 
