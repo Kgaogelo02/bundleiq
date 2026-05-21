@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BundleIQ Admin</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',sans-serif;background:#f0f4f8;color:#1a1a2e;min-height:100vh}
+    header{background:linear-gradient(135deg,#0f4c8a,#185FA5);color:white;padding:1.2rem 2rem;display:flex;justify-content:space-between;align-items:center}
+    header h1{font-size:20px;font-weight:700}
+    header a{color:white;font-size:13px;opacity:0.85;text-decoration:none;border:1px solid rgba(255,255,255,0.4);padding:6px 14px;border-radius:6px}
+    header a:hover{background:rgba(255,255,255,0.15)}
+    main{max-width:1100px;margin:1.5rem auto;padding:0 1rem}
+
+    .top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:10px}
+    .top-bar h2{font-size:16px;font-weight:700}
+    .btn{padding:9px 20px;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.15s}
+    .btn-primary{background:#185FA5;color:white}
+    .btn-primary:hover{background:#0f4c8a}
+    .btn-danger{background:#dc2626;color:white}
+    .btn-danger:hover{background:#b91c1c}
+    .btn-success{background:#16a34a;color:white}
+    .btn-success:hover{background:#15803d}
+    .btn-sm{padding:5px 12px;font-size:12px}
+
+    /* Stats */
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:1.5rem}
+    .stat{background:white;border-radius:10px;padding:1rem 1.2rem;border:1px solid #e2e8f0;text-align:center}
+    .stat-val{font-size:24px;font-weight:700;color:#185FA5}
+    .stat-lbl{font-size:12px;color:#888;margin-top:4px}
+
+    /* Form card */
+    .card{background:white;border-radius:12px;border:1px solid #e2e8f0;margin-bottom:1.5rem;overflow:hidden}
+    .card-header{padding:12px 16px;background:#f8fafc;border-bottom:1px solid #e2e8f0;font-weight:700;font-size:14px;display:flex;justify-content:space-between;align-items:center}
+    .card-body{padding:1.2rem}
+
+    .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+    .form-group label{font-size:12px;font-weight:600;color:#555;display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.03em}
+    .form-group input, .form-group select{width:100%;padding:9px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;outline:none;transition:border 0.15s}
+    .form-group input:focus, .form-group select:focus{border-color:#185FA5}
+    .form-actions{margin-top:1rem;display:flex;gap:8px}
+
+    /* Table */
+    .table-wrap{background:white;border-radius:12px;border:1px solid #e2e8f0;overflow:hidden}
+    .search-bar{padding:10px 14px;border-bottom:1px solid #e2e8f0}
+    .search-bar input{width:100%;padding:8px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;outline:none}
+    .search-bar input:focus{border-color:#185FA5}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    thead{background:#f8fafc}
+    th{padding:10px 12px;text-align:left;font-weight:600;color:#555;font-size:11px;text-transform:uppercase;border-bottom:1px solid #e2e8f0;white-space:nowrap}
+    td{padding:10px 12px;border-bottom:1px solid #f8fafc;vertical-align:middle}
+    tr:last-child td{border-bottom:none}
+    tr:hover{background:#f8fafc}
+
+    .ndot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+    .dot-Vodacom{background:#E24B4A}
+    .dot-MTN{background:#F59E0B}
+    .dot-CellC{background:#185FA5}
+    .dot-Telkom{background:#1D9E75}
+
+    .type-badge{font-size:10px;padding:2px 7px;border-radius:20px;font-weight:600}
+    .type-monthly{background:#f0fdf4;color:#15803d}
+    .type-daily{background:#fff7ed;color:#c2410c}
+    .type-night{background:#f5f3ff;color:#6d28d9}
+    .type-social{background:#fdf2f8;color:#9d174d}
+    .type-hourly{background:#fef9c3;color:#854d0e}
+    .type-weekly{background:#eff6ff;color:#1e40af}
+    .type-nxtlvl{background:#fef3c7;color:#92400e}
+
+    .actions{display:flex;gap:6px}
+
+    /* Modal */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;align-items:center;justify-content:center}
+    .modal-overlay.open{display:flex}
+    .modal{background:white;border-radius:12px;padding:1.5rem;width:90%;max-width:520px;max-height:90vh;overflow-y:auto}
+    .modal h3{font-size:16px;font-weight:700;margin-bottom:1rem}
+    .modal-actions{margin-top:1rem;display:flex;gap:8px;justify-content:flex-end}
+
+    .toast{position:fixed;bottom:1.5rem;right:1.5rem;background:#1a1a2e;color:white;padding:12px 20px;border-radius:8px;font-size:14px;z-index:200;opacity:0;transition:opacity 0.3s;pointer-events:none}
+    .toast.show{opacity:1}
+
+    .no-data{text-align:center;padding:3rem;color:#888;font-size:14px}
+  </style>
+</head>
+<body>
+
+<header>
+  <h1> BundleIQ Admin</h1>
+  <a href="index.html">← Back to App</a>
+</header>
+
+<main>
+
+  <!-- Stats -->
+  <div class="stats" id="stats">
+    <div class="stat"><div class="stat-val" id="s-total">—</div><div class="stat-lbl">Total Bundles</div></div>
+    <div class="stat"><div class="stat-val" id="s-vodacom">—</div><div class="stat-lbl">Vodacom</div></div>
+    <div class="stat"><div class="stat-val" id="s-mtn">—</div><div class="stat-lbl">MTN</div></div>
+    <div class="stat"><div class="stat-val" id="s-telkom">—</div><div class="stat-lbl">Telkom</div></div>
+    <div class="stat"><div class="stat-val" id="s-cellc">—</div><div class="stat-lbl">Cell C</div></div>
+  </div>
+
+  <!-- Add Bundle Form -->
+  <div class="card">
+    <div class="card-header">
+       Add New Bundle
+      <button class="btn btn-sm" onclick="toggleForm()" id="toggle-btn">Hide Form</button>
+    </div>
+    <div class="card-body" id="add-form">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Network</label>
+          <select id="f-network">
+            <option>Vodacom</option>
+            <option>MTN</option>
+            <option>Telkom</option>
+            <option>Cell C</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Bundle Name</label>
+          <input id="f-name" placeholder="e.g. Vodacom Monthly 1GB"/>
+        </div>
+        <div class="form-group">
+          <label>Data Amount (display)</label>
+          <input id="f-data" placeholder="e.g. 1GB, 500MB"/>
+        </div>
+        <div class="form-group">
+          <label>Data in MB (for calculation)</label>
+          <input id="f-mb" type="number" placeholder="e.g. 1024 for 1GB"/>
+        </div>
+        <div class="form-group">
+          <label>Price (Rands)</label>
+          <input id="f-price" type="number" placeholder="e.g. 49"/>
+        </div>
+        <div class="form-group">
+          <label>Validity</label>
+          <input id="f-validity" placeholder="e.g. 30 days, 1 day"/>
+        </div>
+        <div class="form-group">
+          <label>Bundle Type</label>
+          <select id="f-type">
+            <option value="monthly">Monthly</option>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="night">Night</option>
+            <option value="social">Social</option>
+            <option value="hourly">Hourly</option>
+            <option value="nxtlvl">NXT LVL</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-success" onclick="addBundle()">Save Bundle</button>
+        <button class="btn" style="background:#f1f5f9;color:#555" onclick="clearForm()">Clear</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bundle Table -->
+  <div class="top-bar">
+    <h2>All Bundles</h2>
+    <button class="btn btn-primary btn-sm" onclick="loadBundles()"> Refresh</button>
+  </div>
+
+  <div class="table-wrap">
+    <div class="search-bar">
+      <input type="text" id="search" placeholder="Search by network, name, or type..." oninput="filterTable()"/>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Network</th>
+          <th>Bundle Name</th>
+          <th>Data</th>
+          <th>Price</th>
+          <th>Validity</th>
+          <th>Cost/MB</th>
+          <th>Type</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="table-body">
+        <tr><td colspan="9" class="no-data">Loading...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</main>
+
+<!-- Edit Modal -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <h3>Edit Bundle</h3>
+    <input type="hidden" id="e-id"/>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Network</label>
+        <select id="e-network">
+          <option>Vodacom</option><option>MTN</option><option>Telkom</option><option>Cell C</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Bundle Name</label>
+        <input id="e-name"/>
+      </div>
+      <div class="form-group">
+        <label>Data Amount (display)</label>
+        <input id="e-data"/>
+      </div>
+      <div class="form-group">
+        <label>Data in MB (for calculation)</label>
+        <input id="e-mb" type="number"/>
+      </div>
+      <div class="form-group">
+        <label>Price (Rands)</label>
+        <input id="e-price" type="number"/>
+      </div>
+      <div class="form-group">
+        <label>Validity</label>
+        <input id="e-validity"/>
+      </div>
+      <div class="form-group">
+        <label>Bundle Type</label>
+        <select id="e-type">
+          <option value="monthly">Monthly</option>
+          <option value="daily">Daily</option>
+          <option value="weekly">Weekly</option>
+          <option value="night">Night</option>
+          <option value="social">Social</option>
+          <option value="hourly">Hourly</option>
+          <option value="nxtlvl">NXT LVL</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" style="background:#f1f5f9;color:#555" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-success" onclick="saveEdit()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const API = 'http://127.0.0.1:5000';
+  let allBundles = [];
+  let formVisible = true;
+
+  function dotClass(n){ return 'dot-' + n.replace(/\s/g,''); }
+
+  function showToast(msg, ok=true){
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.background = ok ? '#16a34a' : '#dc2626';
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'), 3000);
+  }
+
+  function toggleForm(){
+    formVisible = !formVisible;
+    document.getElementById('add-form').style.display = formVisible ? '' : 'none';
+    document.getElementById('toggle-btn').textContent = formVisible ? 'Hide Form' : 'Show Form';
+  }
+
+  function clearForm(){
+    ['f-network','f-name','f-data','f-mb','f-price','f-validity','f-type'].forEach(id=>{
+      const el = document.getElementById(id);
+      if(el.tagName==='SELECT') el.selectedIndex=0;
+      else el.value='';
+    });
+  }
+
+  async function loadBundles(){
+    try {
+      const res = await fetch(API+'/bundles');
+      allBundles = await res.json();
+      renderStats();
+      renderTable(allBundles);
+    } catch(e){
+      document.getElementById('table-body').innerHTML='<tr><td colspan="9" class="no-data">❌ Cannot connect to API. Make sure Flask is running.</td></tr>';
+    }
+  }
+
+  function renderStats(){
+    document.getElementById('s-total').textContent = allBundles.length;
+    document.getElementById('s-vodacom').textContent = allBundles.filter(b=>b.network==='Vodacom').length;
+    document.getElementById('s-mtn').textContent = allBundles.filter(b=>b.network==='MTN').length;
+    document.getElementById('s-telkom').textContent = allBundles.filter(b=>b.network==='Telkom').length;
+    document.getElementById('s-cellc').textContent = allBundles.filter(b=>b.network==='Cell C').length;
+  }
+
+  function filterTable(){
+    const q = document.getElementById('search').value.toLowerCase();
+    const filtered = allBundles.filter(b=>
+      b.network.toLowerCase().includes(q) ||
+      b.bundle_name.toLowerCase().includes(q) ||
+      b.bundle_type.toLowerCase().includes(q) ||
+      b.data_amount.toLowerCase().includes(q)
+    );
+    renderTable(filtered);
+  }
+
+  function renderTable(bundles){
+    const tbody = document.getElementById('table-body');
+    if(!bundles.length){
+      tbody.innerHTML='<tr><td colspan="9" class="no-data">No bundles found.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = bundles.map(b=>`
+      <tr>
+        <td style="color:#aaa;font-size:12px">${b.id}</td>
+        <td><span class="ndot ${dotClass(b.network)}"></span>${b.network}</td>
+        <td style="max-width:200px;font-size:12px">${b.bundle_name}</td>
+        <td style="font-weight:700;color:#185FA5">${b.data_amount}</td>
+        <td style="font-weight:700">R${b.price}</td>
+        <td style="color:#555;font-size:12px">${b.validity}</td>
+        <td style="color:#555;font-size:12px">R${b.cost_per_mb.toFixed(4)}</td>
+        <td><span class="type-badge type-${b.bundle_type}">${b.bundle_type}</span></td>
+        <td>
+          <div class="actions">
+            <button class="btn btn-sm btn-primary" onclick="openEdit(${b.id})">Edit</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteBundle(${b.id})">Delete</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  async function addBundle(){
+    const network = document.getElementById('f-network').value;
+    const bundle_name = document.getElementById('f-name').value.trim();
+    const data_amount = document.getElementById('f-data').value.trim();
+    const data_mb = document.getElementById('f-mb').value;
+    const price = document.getElementById('f-price').value;
+    const validity = document.getElementById('f-validity').value.trim();
+    const bundle_type = document.getElementById('f-type').value;
+
+    if(!bundle_name || !data_amount || !data_mb || !price || !validity){
+      showToast('Please fill in all fields', false);
+      return;
+    }
+
+    try {
+      const res = await fetch(API+'/admin/bundle', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({network, bundle_name, data_amount, data_mb, price, validity, bundle_type})
+      });
+      const data = await res.json();
+      showToast('Bundle added successfully!');
+      clearForm();
+      loadBundles();
+    } catch(e){
+      showToast('Failed to add bundle', false);
+    }
+  }
+
+  function openEdit(id){
+    const b = allBundles.find(x=>x.id===id);
+    if(!b) return;
+    document.getElementById('e-id').value = b.id;
+    document.getElementById('e-network').value = b.network;
+    document.getElementById('e-name').value = b.bundle_name;
+    document.getElementById('e-data').value = b.data_amount;
+    document.getElementById('e-price').value = b.price;
+    document.getElementById('e-validity').value = b.validity;
+    document.getElementById('e-type').value = b.bundle_type;
+    document.getElementById('e-mb').value = '';
+    document.getElementById('edit-modal').classList.add('open');
+  }
+
+  function closeModal(){
+    document.getElementById('edit-modal').classList.remove('open');
+  }
+
+  async function saveEdit(){
+    const id = document.getElementById('e-id').value;
+    const body = {
+      network: document.getElementById('e-network').value,
+      bundle_name: document.getElementById('e-name').value,
+      data_amount: document.getElementById('e-data').value,
+      price: document.getElementById('e-price').value,
+      validity: document.getElementById('e-validity').value,
+      bundle_type: document.getElementById('e-type').value,
+    };
+    const mb = document.getElementById('e-mb').value;
+    if(mb) body.data_mb = mb;
+
+    try {
+      await fetch(API+'/admin/bundle/'+id, {
+        method:'PUT',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(body)
+      });
+      showToast('Bundle updated!');
+      closeModal();
+      loadBundles();
+    } catch(e){
+      showToast('Failed to update', false);
+    }
+  }
+
+  async function deleteBundle(id){
+    if(!confirm('Delete this bundle? This cannot be undone.')) return;
+    try {
+      await fetch(API+'/admin/bundle/'+id, {method:'DELETE'});
+      showToast('Bundle deleted');
+      loadBundles();
+    } catch(e){
+      showToast('Failed to delete', false);
+    }
+  }
+
+  loadBundles();
+</script>
+</body>
+</html>

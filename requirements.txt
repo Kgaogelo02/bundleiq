@@ -1,0 +1,11 @@
+@'
+flask
+flask-sqlalchemy
+flask-cors
+psycopg2-binary
+python-dotenv
+beautifulsoup4
+requests
+lxml
+gunicorn
+'@ | Out-File -FilePath C:\bundleiq\backend\requirements.txt -Encoding utf8
