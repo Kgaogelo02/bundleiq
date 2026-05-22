@@ -1,98 +1,116 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>BundleIQ Admin</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <style>
+    :root{--bg:#f0f4f8;--surface:#fff;--surface2:#f8fafc;--border:#e2e8f0;--text:#1a1a2e;--text2:#64748b;--shadow:0 2px 12px rgba(0,0,0,0.07)}
+    [data-theme="dark"]{--bg:#0f1117;--surface:#1a1d27;--surface2:#222536;--border:#2e3347;--text:#f1f5f9;--text2:#94a3b8;--shadow:0 2px 12px rgba(0,0,0,0.4)}
     *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Segoe UI',sans-serif;background:#f0f4f8;color:#1a1a2e;min-height:100vh}
-    header{background:linear-gradient(135deg,#0f4c8a,#185FA5);color:white;padding:1.2rem 2rem;display:flex;justify-content:space-between;align-items:center}
-    header h1{font-size:20px;font-weight:700}
-    header a{color:white;font-size:13px;opacity:0.85;text-decoration:none;border:1px solid rgba(255,255,255,0.4);padding:6px 14px;border-radius:6px}
-    header a:hover{background:rgba(255,255,255,0.15)}
+    body{font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background 0.3s,color 0.3s}
+
+    /* LOGIN SCREEN */
+    .login-screen{display:none;position:fixed;inset:0;background:linear-gradient(135deg,#0f4c8a,#185FA5,#1D9E75);z-index:999;align-items:center;justify-content:center}
+    .login-screen.show{display:flex}
+    .login-card{background:white;border-radius:16px;padding:2.5rem;width:90%;max-width:380px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
+    .login-logo{width:56px;height:56px;background:linear-gradient(135deg,#0f4c8a,#185FA5);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;color:white;font-size:24px}
+    .login-card h2{font-size:20px;font-weight:800;color:#1a1a2e;margin-bottom:4px}
+    .login-card p{font-size:13px;color:#64748b;margin-bottom:1.5rem}
+    .login-input{width:100%;padding:12px 16px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none;margin-bottom:12px;transition:border 0.2s;text-align:center;letter-spacing:2px}
+    .login-input:focus{border-color:#185FA5}
+    .login-btn{width:100%;padding:12px;background:linear-gradient(135deg,#0f4c8a,#185FA5);color:white;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;transition:opacity 0.2s}
+    .login-btn:hover{opacity:0.9}
+    .login-error{color:#dc2626;font-size:13px;margin-top:10px;display:none}
+
+    header{background:linear-gradient(135deg,#0f4c8a,#185FA5,#1D9E75);padding:1.2rem 2rem;display:flex;justify-content:space-between;align-items:center}
+    header h1{font-size:20px;font-weight:700;color:white;display:flex;align-items:center;gap:10px}
+    .header-right{display:flex;gap:8px;align-items:center}
+    .header-btn{background:rgba(255,255,255,0.15);border:none;color:white;padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:6px;text-decoration:none;transition:background 0.2s}
+    .header-btn:hover{background:rgba(255,255,255,0.25)}
+
     main{max-width:1100px;margin:1.5rem auto;padding:0 1rem}
-
-    .top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:10px}
-    .top-bar h2{font-size:16px;font-weight:700}
-    .btn{padding:9px 20px;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.15s}
-    .btn-primary{background:#185FA5;color:white}
-    .btn-primary:hover{background:#0f4c8a}
-    .btn-danger{background:#dc2626;color:white}
-    .btn-danger:hover{background:#b91c1c}
-    .btn-success{background:#16a34a;color:white}
-    .btn-success:hover{background:#15803d}
-    .btn-sm{padding:5px 12px;font-size:12px}
-
-    /* Stats */
     .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:1.5rem}
-    .stat{background:white;border-radius:10px;padding:1rem 1.2rem;border:1px solid #e2e8f0;text-align:center}
-    .stat-val{font-size:24px;font-weight:700;color:#185FA5}
-    .stat-lbl{font-size:12px;color:#888;margin-top:4px}
+    .stat{background:var(--surface);border-radius:10px;padding:1rem 1.2rem;border:1px solid var(--border);text-align:center;box-shadow:var(--shadow)}
+    .stat-val{font-size:24px;font-weight:800;color:#185FA5}
+    .stat-lbl{font-size:12px;color:var(--text2);margin-top:4px}
 
-    /* Form card */
-    .card{background:white;border-radius:12px;border:1px solid #e2e8f0;margin-bottom:1.5rem;overflow:hidden}
-    .card-header{padding:12px 16px;background:#f8fafc;border-bottom:1px solid #e2e8f0;font-weight:700;font-size:14px;display:flex;justify-content:space-between;align-items:center}
+    .card{background:var(--surface);border-radius:12px;border:1px solid var(--border);margin-bottom:1.5rem;overflow:hidden;box-shadow:var(--shadow)}
+    .card-header{padding:12px 16px;background:var(--surface2);border-bottom:1px solid var(--border);font-weight:700;font-size:14px;display:flex;justify-content:space-between;align-items:center;color:var(--text)}
     .card-body{padding:1.2rem}
-
     .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
-    .form-group label{font-size:12px;font-weight:600;color:#555;display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.03em}
-    .form-group input, .form-group select{width:100%;padding:9px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;outline:none;transition:border 0.15s}
-    .form-group input:focus, .form-group select:focus{border-color:#185FA5}
+    .form-group label{font-size:12px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.03em}
+    .form-group input,.form-group select{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;outline:none;transition:border 0.15s;background:var(--surface);color:var(--text)}
+    .form-group input:focus,.form-group select:focus{border-color:#185FA5}
     .form-actions{margin-top:1rem;display:flex;gap:8px}
 
-    /* Table */
-    .table-wrap{background:white;border-radius:12px;border:1px solid #e2e8f0;overflow:hidden}
-    .search-bar{padding:10px 14px;border-bottom:1px solid #e2e8f0}
-    .search-bar input{width:100%;padding:8px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;outline:none}
+    .btn{padding:9px 20px;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.15s;display:inline-flex;align-items:center;gap:6px}
+    .btn-primary{background:#185FA5;color:white}.btn-primary:hover{background:#0f4c8a}
+    .btn-danger{background:#dc2626;color:white}.btn-danger:hover{background:#b91c1c}
+    .btn-success{background:#16a34a;color:white}.btn-success:hover{background:#15803d}
+    .btn-neutral{background:var(--surface2);color:var(--text2);border:1px solid var(--border)}
+    .btn-sm{padding:5px 12px;font-size:12px}
+
+    .top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:10px}
+    .top-bar h2{font-size:16px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px}
+
+    .table-wrap{background:var(--surface);border-radius:12px;border:1px solid var(--border);overflow:hidden;box-shadow:var(--shadow)}
+    .search-bar{padding:10px 14px;border-bottom:1px solid var(--border);position:relative}
+    .search-bar input{width:100%;padding:8px 12px 8px 36px;border:1px solid var(--border);border-radius:8px;font-size:14px;outline:none;background:var(--surface);color:var(--text)}
     .search-bar input:focus{border-color:#185FA5}
+    .search-bar i{position:absolute;left:26px;top:50%;transform:translateY(-50%);color:var(--text2);font-size:13px}
+
     table{width:100%;border-collapse:collapse;font-size:13px}
-    thead{background:#f8fafc}
-    th{padding:10px 12px;text-align:left;font-weight:600;color:#555;font-size:11px;text-transform:uppercase;border-bottom:1px solid #e2e8f0;white-space:nowrap}
-    td{padding:10px 12px;border-bottom:1px solid #f8fafc;vertical-align:middle}
+    thead{background:var(--surface2)}
+    th{padding:10px 12px;text-align:left;font-weight:600;color:var(--text2);font-size:11px;text-transform:uppercase;border-bottom:1px solid var(--border)}
+    td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle;color:var(--text)}
     tr:last-child td{border-bottom:none}
-    tr:hover{background:#f8fafc}
+    tr:hover{background:var(--surface2)}
 
     .ndot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
-    .dot-Vodacom{background:#E24B4A}
-    .dot-MTN{background:#F59E0B}
-    .dot-CellC{background:#185FA5}
-    .dot-Telkom{background:#1D9E75}
-
-    .type-badge{font-size:10px;padding:2px 7px;border-radius:20px;font-weight:600}
-    .type-monthly{background:#f0fdf4;color:#15803d}
-    .type-daily{background:#fff7ed;color:#c2410c}
-    .type-night{background:#f5f3ff;color:#6d28d9}
-    .type-social{background:#fdf2f8;color:#9d174d}
-    .type-hourly{background:#fef9c3;color:#854d0e}
-    .type-weekly{background:#eff6ff;color:#1e40af}
+    .dot-Vodacom{background:#E24B4A}.dot-MTN{background:#F59E0B}.dot-CellC{background:#185FA5}.dot-Telkom{background:#1D9E75}
+    .type-badge{font-size:10px;padding:3px 8px;border-radius:20px;font-weight:700;text-transform:uppercase}
+    .type-monthly{background:#f0fdf4;color:#15803d}.type-daily{background:#fff7ed;color:#c2410c}
+    .type-night{background:#f5f3ff;color:#6d28d9}.type-social{background:#fdf2f8;color:#9d174d}
+    .type-hourly{background:#fef9c3;color:#854d0e}.type-weekly{background:#eff6ff;color:#1e40af}
     .type-nxtlvl{background:#fef3c7;color:#92400e}
-
     .actions{display:flex;gap:6px}
 
-    /* Modal */
     .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;align-items:center;justify-content:center}
     .modal-overlay.open{display:flex}
-    .modal{background:white;border-radius:12px;padding:1.5rem;width:90%;max-width:520px;max-height:90vh;overflow-y:auto}
-    .modal h3{font-size:16px;font-weight:700;margin-bottom:1rem}
+    .modal{background:var(--surface);border-radius:12px;padding:1.5rem;width:90%;max-width:520px;max-height:90vh;overflow-y:auto}
+    .modal h3{font-size:16px;font-weight:700;margin-bottom:1rem;color:var(--text);display:flex;align-items:center;gap:8px}
     .modal-actions{margin-top:1rem;display:flex;gap:8px;justify-content:flex-end}
 
-    .toast{position:fixed;bottom:1.5rem;right:1.5rem;background:#1a1a2e;color:white;padding:12px 20px;border-radius:8px;font-size:14px;z-index:200;opacity:0;transition:opacity 0.3s;pointer-events:none}
+    .toast{position:fixed;bottom:1.5rem;right:1.5rem;color:white;padding:12px 20px;border-radius:8px;font-size:14px;z-index:200;opacity:0;transition:opacity 0.3s;pointer-events:none;display:flex;align-items:center;gap:8px}
     .toast.show{opacity:1}
-
-    .no-data{text-align:center;padding:3rem;color:#888;font-size:14px}
+    .no-data{text-align:center;padding:3rem;color:var(--text2);font-size:14px}
   </style>
 </head>
 <body>
 
+<!-- LOGIN SCREEN -->
+<div class="login-screen show" id="login-screen">
+  <div class="login-card">
+    <div class="login-logo"><i class="fa-solid fa-gear"></i></div>
+    <h2>BundleIQ Admin</h2>
+    <p>Enter your admin password to continue</p>
+    <input type="password" class="login-input" id="login-input" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()"/>
+    <button class="login-btn" onclick="doLogin()"><i class="fa-solid fa-unlock"></i> Login</button>
+    <div class="login-error" id="login-error"><i class="fa-solid fa-triangle-exclamation"></i> Wrong password. Try again.</div>
+  </div>
+</div>
+
 <header>
-  <h1> BundleIQ Admin</h1>
-  <a href="index.html">← Back to App</a>
+  <h1><i class="fa-solid fa-gear"></i> BundleIQ Admin</h1>
+  <div class="header-right">
+    <a href="index.html" class="header-btn"><i class="fa-solid fa-arrow-left"></i> Back to App</a>
+    <button class="header-btn" onclick="doLogout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+  </div>
 </header>
 
 <main>
-
-  <!-- Stats -->
   <div class="stats" id="stats">
     <div class="stat"><div class="stat-val" id="s-total">—</div><div class="stat-lbl">Total Bundles</div></div>
     <div class="stat"><div class="stat-val" id="s-vodacom">—</div><div class="stat-lbl">Vodacom</div></div>
@@ -101,143 +119,87 @@
     <div class="stat"><div class="stat-val" id="s-cellc">—</div><div class="stat-lbl">Cell C</div></div>
   </div>
 
-  <!-- Add Bundle Form -->
   <div class="card">
     <div class="card-header">
-       Add New Bundle
-      <button class="btn btn-sm" onclick="toggleForm()" id="toggle-btn">Hide Form</button>
+      <span><i class="fa-solid fa-plus"></i> Add New Bundle</span>
+      <button class="btn btn-neutral btn-sm" onclick="toggleForm()" id="toggle-btn">Hide</button>
     </div>
     <div class="card-body" id="add-form">
       <div class="form-grid">
-        <div class="form-group">
-          <label>Network</label>
-          <select id="f-network">
-            <option>Vodacom</option>
-            <option>MTN</option>
-            <option>Telkom</option>
-            <option>Cell C</option>
-          </select>
+        <div class="form-group"><label>Network</label>
+          <select id="f-network"><option>Vodacom</option><option>MTN</option><option>Telkom</option><option>Cell C</option></select>
         </div>
-        <div class="form-group">
-          <label>Bundle Name</label>
-          <input id="f-name" placeholder="e.g. Vodacom Monthly 1GB"/>
-        </div>
-        <div class="form-group">
-          <label>Data Amount (display)</label>
-          <input id="f-data" placeholder="e.g. 1GB, 500MB"/>
-        </div>
-        <div class="form-group">
-          <label>Data in MB (for calculation)</label>
-          <input id="f-mb" type="number" placeholder="e.g. 1024 for 1GB"/>
-        </div>
-        <div class="form-group">
-          <label>Price (Rands)</label>
-          <input id="f-price" type="number" placeholder="e.g. 49"/>
-        </div>
-        <div class="form-group">
-          <label>Validity</label>
-          <input id="f-validity" placeholder="e.g. 30 days, 1 day"/>
-        </div>
-        <div class="form-group">
-          <label>Bundle Type</label>
+        <div class="form-group"><label>Bundle Name</label><input id="f-name" placeholder="e.g. Vodacom Monthly 1GB"/></div>
+        <div class="form-group"><label>Data Amount (display)</label><input id="f-data" placeholder="e.g. 1GB, 500MB"/></div>
+        <div class="form-group"><label>Data in MB (for cost calc)</label><input id="f-mb" type="number" placeholder="e.g. 1024 for 1GB"/></div>
+        <div class="form-group"><label>Price (Rands)</label><input id="f-price" type="number" placeholder="e.g. 49"/></div>
+        <div class="form-group"><label>Validity</label><input id="f-validity" placeholder="e.g. 30 days"/></div>
+        <div class="form-group"><label>Bundle Type</label>
           <select id="f-type">
-            <option value="monthly">Monthly</option>
-            <option value="daily">Daily</option>
-            <option value="weekly">Weekly</option>
-            <option value="night">Night</option>
-            <option value="social">Social</option>
-            <option value="hourly">Hourly</option>
+            <option value="monthly">Monthly</option><option value="daily">Daily</option>
+            <option value="weekly">Weekly</option><option value="night">Night</option>
+            <option value="social">Social</option><option value="hourly">Hourly</option>
             <option value="nxtlvl">NXT LVL</option>
           </select>
         </div>
       </div>
       <div class="form-actions">
-        <button class="btn btn-success" onclick="addBundle()">Save Bundle</button>
-        <button class="btn" style="background:#f1f5f9;color:#555" onclick="clearForm()">Clear</button>
+        <button class="btn btn-success" onclick="addBundle()"><i class="fa-solid fa-floppy-disk"></i> Save Bundle</button>
+        <button class="btn btn-neutral" onclick="clearForm()"><i class="fa-solid fa-xmark"></i> Clear</button>
       </div>
     </div>
   </div>
 
-  <!-- Bundle Table -->
   <div class="top-bar">
-    <h2>All Bundles</h2>
-    <button class="btn btn-primary btn-sm" onclick="loadBundles()"> Refresh</button>
+    <h2><i class="fa-solid fa-table-list"></i> All Bundles</h2>
+    <button class="btn btn-primary btn-sm" onclick="loadBundles()"><i class="fa-solid fa-rotate"></i> Refresh</button>
   </div>
 
   <div class="table-wrap">
     <div class="search-bar">
-      <input type="text" id="search" placeholder="Search by network, name, or type..." oninput="filterTable()"/>
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="search" placeholder="Search by network, name or type..." oninput="filterTable()"/>
     </div>
     <table>
       <thead>
         <tr>
-          <th>ID</th>
-          <th>Network</th>
-          <th>Bundle Name</th>
-          <th>Data</th>
-          <th>Price</th>
-          <th>Validity</th>
-          <th>Cost/MB</th>
-          <th>Type</th>
-          <th>Actions</th>
+          <th>ID</th><th>Network</th><th>Bundle Name</th><th>Data</th>
+          <th>Price</th><th>Validity</th><th>Cost/MB</th><th>Type</th><th>Actions</th>
         </tr>
       </thead>
       <tbody id="table-body">
-        <tr><td colspan="9" class="no-data">Loading...</td></tr>
+        <tr><td colspan="9" class="no-data"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</td></tr>
       </tbody>
     </table>
   </div>
-
 </main>
 
 <!-- Edit Modal -->
 <div class="modal-overlay" id="edit-modal">
   <div class="modal">
-    <h3>Edit Bundle</h3>
+    <h3><i class="fa-solid fa-pen"></i> Edit Bundle</h3>
     <input type="hidden" id="e-id"/>
     <div class="form-grid">
-      <div class="form-group">
-        <label>Network</label>
-        <select id="e-network">
-          <option>Vodacom</option><option>MTN</option><option>Telkom</option><option>Cell C</option>
-        </select>
+      <div class="form-group"><label>Network</label>
+        <select id="e-network"><option>Vodacom</option><option>MTN</option><option>Telkom</option><option>Cell C</option></select>
       </div>
-      <div class="form-group">
-        <label>Bundle Name</label>
-        <input id="e-name"/>
-      </div>
-      <div class="form-group">
-        <label>Data Amount (display)</label>
-        <input id="e-data"/>
-      </div>
-      <div class="form-group">
-        <label>Data in MB (for calculation)</label>
-        <input id="e-mb" type="number"/>
-      </div>
-      <div class="form-group">
-        <label>Price (Rands)</label>
-        <input id="e-price" type="number"/>
-      </div>
-      <div class="form-group">
-        <label>Validity</label>
-        <input id="e-validity"/>
-      </div>
-      <div class="form-group">
-        <label>Bundle Type</label>
+      <div class="form-group"><label>Bundle Name</label><input id="e-name"/></div>
+      <div class="form-group"><label>Data Amount (display)</label><input id="e-data"/></div>
+      <div class="form-group"><label>Data in MB (for cost calc)</label><input id="e-mb" type="number" placeholder="Leave blank to keep current"/></div>
+      <div class="form-group"><label>Price (Rands)</label><input id="e-price" type="number"/></div>
+      <div class="form-group"><label>Validity</label><input id="e-validity"/></div>
+      <div class="form-group"><label>Bundle Type</label>
         <select id="e-type">
-          <option value="monthly">Monthly</option>
-          <option value="daily">Daily</option>
-          <option value="weekly">Weekly</option>
-          <option value="night">Night</option>
-          <option value="social">Social</option>
-          <option value="hourly">Hourly</option>
+          <option value="monthly">Monthly</option><option value="daily">Daily</option>
+          <option value="weekly">Weekly</option><option value="night">Night</option>
+          <option value="social">Social</option><option value="hourly">Hourly</option>
           <option value="nxtlvl">NXT LVL</option>
         </select>
       </div>
     </div>
     <div class="modal-actions">
-      <button class="btn" style="background:#f1f5f9;color:#555" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-success" onclick="saveEdit()">Save Changes</button>
+      <button class="btn btn-neutral" onclick="closeModal()"><i class="fa-solid fa-xmark"></i> Cancel</button>
+      <button class="btn btn-success" onclick="saveEdit()"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
     </div>
   </div>
 </div>
@@ -246,23 +208,80 @@
 
 <script>
   const API = 'https://bundleiq-api.onrender.com';
-  const ADMIN_PASSWORD = 'bundleiq2026';
-  if(sessionStorage.getItem('bundleiq-auth') !== 'true'){
-  const pwd = prompt('Enter admin password:');
-  if(pwd !== ADMIN_PASSWORD){
-    document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;"><div style="text-align:center"><h2 style="color:#dc2626">Access Denied</h2><p style="margin-top:8px;color:#555">Invalid password.</p></div></div>';
-    throw new Error('Unauthorized');
-  }
-    sessionStorage.setItem('bundleiq-auth','true');
-  }
   let allBundles = [];
   let formVisible = true;
+  let ADMIN_TOKEN = '';
 
-  function dotClass(n){ return 'dot-' + n.replace(/\s/g,''); }
+  // LOGIN
+  function doLogin(){
+    const pwd = document.getElementById('login-input').value;
+    if(!pwd){ return; }
+    ADMIN_TOKEN = pwd;
+    // Test the token by making a real request
+    fetch(API+'/bundles')
+      .then(r=>r.json())
+      .then(data=>{
+        // Try an admin request to verify password
+        return fetch(API+'/admin/bundle/0', {
+          method:'DELETE',
+          headers:{'X-Admin-Token': ADMIN_TOKEN}
+        });
+      })
+      .then(r=>{
+        if(r.status === 404 || r.status === 200){
+          // 404 means bundle not found but auth passed
+          sessionStorage.setItem('bundleiq-token', ADMIN_TOKEN);
+          document.getElementById('login-screen').classList.remove('show');
+          loadBundles();
+        } else if(r.status === 401){
+          showLoginError();
+        }
+      })
+      .catch(()=>{
+        // If network error just try to proceed
+        sessionStorage.setItem('bundleiq-token', ADMIN_TOKEN);
+        document.getElementById('login-screen').classList.remove('show');
+        loadBundles();
+      });
+  }
+
+  function showLoginError(){
+    const err = document.getElementById('login-error');
+    err.style.display = 'block';
+    document.getElementById('login-input').value = '';
+    ADMIN_TOKEN = '';
+  }
+
+  function doLogout(){
+    sessionStorage.removeItem('bundleiq-token');
+    ADMIN_TOKEN = '';
+    document.getElementById('login-screen').classList.add('show');
+    document.getElementById('login-input').value = '';
+    document.getElementById('login-error').style.display = 'none';
+  }
+
+  // Check if already logged in
+  const savedToken = sessionStorage.getItem('bundleiq-token');
+  if(savedToken){
+    ADMIN_TOKEN = savedToken;
+    document.getElementById('login-screen').classList.remove('show');
+  }
+
+  async function authFetch(url, options={}){
+    options.headers = {...(options.headers||{}), 'Content-Type':'application/json', 'X-Admin-Token': ADMIN_TOKEN};
+    const res = await fetch(url, options);
+    if(res.status === 401){
+      doLogout();
+      throw new Error('Unauthorized');
+    }
+    return res;
+  }
+
+  function dotClass(n){ return 'dot-'+n.replace(/\s/g,''); }
 
   function showToast(msg, ok=true){
     const t = document.getElementById('toast');
-    t.textContent = msg;
+    t.innerHTML = `<i class="fa-solid ${ok?'fa-circle-check':'fa-circle-xmark'}"></i> ${msg}`;
     t.style.background = ok ? '#16a34a' : '#dc2626';
     t.classList.add('show');
     setTimeout(()=>t.classList.remove('show'), 3000);
@@ -270,16 +289,14 @@
 
   function toggleForm(){
     formVisible = !formVisible;
-    document.getElementById('add-form').style.display = formVisible ? '' : 'none';
-    document.getElementById('toggle-btn').textContent = formVisible ? 'Hide Form' : 'Show Form';
+    document.getElementById('add-form').style.display = formVisible?'':'none';
+    document.getElementById('toggle-btn').textContent = formVisible?'Hide':'Show';
   }
 
   function clearForm(){
-    ['f-network','f-name','f-data','f-mb','f-price','f-validity','f-type'].forEach(id=>{
-      const el = document.getElementById(id);
-      if(el.tagName==='SELECT') el.selectedIndex=0;
-      else el.value='';
-    });
+    ['f-name','f-data','f-mb','f-price','f-validity'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('f-network').selectedIndex=0;
+    document.getElementById('f-type').selectedIndex=0;
   }
 
   async function loadBundles(){
@@ -289,141 +306,112 @@
       renderStats();
       renderTable(allBundles);
     } catch(e){
-      document.getElementById('table-body').innerHTML='<tr><td colspan="9" class="no-data">❌ Cannot connect to API. Make sure Flask is running.</td></tr>';
+      document.getElementById('table-body').innerHTML='<tr><td colspan="9" class="no-data"><i class="fa-solid fa-triangle-exclamation"></i> Cannot connect to API.</td></tr>';
     }
   }
 
   function renderStats(){
-    document.getElementById('s-total').textContent = allBundles.length;
-    document.getElementById('s-vodacom').textContent = allBundles.filter(b=>b.network==='Vodacom').length;
-    document.getElementById('s-mtn').textContent = allBundles.filter(b=>b.network==='MTN').length;
-    document.getElementById('s-telkom').textContent = allBundles.filter(b=>b.network==='Telkom').length;
-    document.getElementById('s-cellc').textContent = allBundles.filter(b=>b.network==='Cell C').length;
+    document.getElementById('s-total').textContent=allBundles.length;
+    document.getElementById('s-vodacom').textContent=allBundles.filter(b=>b.network==='Vodacom').length;
+    document.getElementById('s-mtn').textContent=allBundles.filter(b=>b.network==='MTN').length;
+    document.getElementById('s-telkom').textContent=allBundles.filter(b=>b.network==='Telkom').length;
+    document.getElementById('s-cellc').textContent=allBundles.filter(b=>b.network==='Cell C').length;
   }
 
   function filterTable(){
-    const q = document.getElementById('search').value.toLowerCase();
-    const filtered = allBundles.filter(b=>
-      b.network.toLowerCase().includes(q) ||
-      b.bundle_name.toLowerCase().includes(q) ||
-      b.bundle_type.toLowerCase().includes(q) ||
+    const q=document.getElementById('search').value.toLowerCase();
+    renderTable(allBundles.filter(b=>
+      b.network.toLowerCase().includes(q)||
+      b.bundle_name.toLowerCase().includes(q)||
+      b.bundle_type.toLowerCase().includes(q)||
       b.data_amount.toLowerCase().includes(q)
-    );
-    renderTable(filtered);
+    ));
   }
 
   function renderTable(bundles){
-    const tbody = document.getElementById('table-body');
-    if(!bundles.length){
-      tbody.innerHTML='<tr><td colspan="9" class="no-data">No bundles found.</td></tr>';
-      return;
-    }
-    tbody.innerHTML = bundles.map(b=>`
+    const tbody=document.getElementById('table-body');
+    if(!bundles.length){tbody.innerHTML='<tr><td colspan="9" class="no-data">No bundles found.</td></tr>';return;}
+    tbody.innerHTML=bundles.map(b=>`
       <tr>
-        <td style="color:#aaa;font-size:12px">${b.id}</td>
+        <td style="color:var(--text2);font-size:12px">${b.id}</td>
         <td><span class="ndot ${dotClass(b.network)}"></span>${b.network}</td>
         <td style="max-width:200px;font-size:12px">${b.bundle_name}</td>
         <td style="font-weight:700;color:#185FA5">${b.data_amount}</td>
         <td style="font-weight:700">R${b.price}</td>
-        <td style="color:#555;font-size:12px">${b.validity}</td>
-        <td style="color:#555;font-size:12px">R${b.cost_per_mb.toFixed(4)}</td>
+        <td style="color:var(--text2);font-size:12px">${b.validity}</td>
+        <td style="color:var(--text2);font-size:12px">R${b.cost_per_mb.toFixed(4)}</td>
         <td><span class="type-badge type-${b.bundle_type}">${b.bundle_type}</span></td>
-        <td>
-          <div class="actions">
-            <button class="btn btn-sm btn-primary" onclick="openEdit(${b.id})">Edit</button>
-            <button class="btn btn-sm btn-danger" onclick="deleteBundle(${b.id})">Delete</button>
-          </div>
-        </td>
+        <td><div class="actions">
+          <button class="btn btn-primary btn-sm" onclick="openEdit(${b.id})"><i class="fa-solid fa-pen"></i></button>
+          <button class="btn btn-danger btn-sm" onclick="deleteBundle(${b.id})"><i class="fa-solid fa-trash"></i></button>
+        </div></td>
       </tr>
     `).join('');
   }
 
   async function addBundle(){
-    const network = document.getElementById('f-network').value;
-    const bundle_name = document.getElementById('f-name').value.trim();
-    const data_amount = document.getElementById('f-data').value.trim();
-    const data_mb = document.getElementById('f-mb').value;
-    const price = document.getElementById('f-price').value;
-    const validity = document.getElementById('f-validity').value.trim();
-    const bundle_type = document.getElementById('f-type').value;
-
-    if(!bundle_name || !data_amount || !data_mb || !price || !validity){
-      showToast('Please fill in all fields', false);
-      return;
-    }
-
+    const network=document.getElementById('f-network').value;
+    const bundle_name=document.getElementById('f-name').value.trim();
+    const data_amount=document.getElementById('f-data').value.trim();
+    const data_mb=document.getElementById('f-mb').value;
+    const price=document.getElementById('f-price').value;
+    const validity=document.getElementById('f-validity').value.trim();
+    const bundle_type=document.getElementById('f-type').value;
+    if(!bundle_name||!data_amount||!data_mb||!price||!validity){showToast('Fill in all fields',false);return;}
     try {
-      const res = await fetch(API+'/admin/bundle', {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({network, bundle_name, data_amount, data_mb, price, validity, bundle_type})
-      });
-      const data = await res.json();
-      showToast('Bundle added successfully!');
+      await authFetch(API+'/admin/bundle',{method:'POST',body:JSON.stringify({network,bundle_name,data_amount,data_mb,price,validity,bundle_type})});
+      showToast('Bundle added!');
       clearForm();
       loadBundles();
-    } catch(e){
-      showToast('Failed to add bundle', false);
-    }
+    } catch(e){ if(e.message!=='Unauthorized') showToast('Failed to add',false); }
   }
 
   function openEdit(id){
-    const b = allBundles.find(x=>x.id===id);
+    const b=allBundles.find(x=>x.id===id);
     if(!b) return;
-    document.getElementById('e-id').value = b.id;
-    document.getElementById('e-network').value = b.network;
-    document.getElementById('e-name').value = b.bundle_name;
-    document.getElementById('e-data').value = b.data_amount;
-    document.getElementById('e-price').value = b.price;
-    document.getElementById('e-validity').value = b.validity;
-    document.getElementById('e-type').value = b.bundle_type;
-    document.getElementById('e-mb').value = '';
+    document.getElementById('e-id').value=b.id;
+    document.getElementById('e-network').value=b.network;
+    document.getElementById('e-name').value=b.bundle_name;
+    document.getElementById('e-data').value=b.data_amount;
+    document.getElementById('e-price').value=b.price;
+    document.getElementById('e-validity').value=b.validity;
+    document.getElementById('e-type').value=b.bundle_type;
+    document.getElementById('e-mb').value='';
     document.getElementById('edit-modal').classList.add('open');
   }
 
-  function closeModal(){
-    document.getElementById('edit-modal').classList.remove('open');
-  }
+  function closeModal(){ document.getElementById('edit-modal').classList.remove('open'); }
 
   async function saveEdit(){
-    const id = document.getElementById('e-id').value;
-    const body = {
-      network: document.getElementById('e-network').value,
-      bundle_name: document.getElementById('e-name').value,
-      data_amount: document.getElementById('e-data').value,
-      price: document.getElementById('e-price').value,
-      validity: document.getElementById('e-validity').value,
-      bundle_type: document.getElementById('e-type').value,
+    const id=document.getElementById('e-id').value;
+    const body={
+      network:document.getElementById('e-network').value,
+      bundle_name:document.getElementById('e-name').value,
+      data_amount:document.getElementById('e-data').value,
+      price:document.getElementById('e-price').value,
+      validity:document.getElementById('e-validity').value,
+      bundle_type:document.getElementById('e-type').value,
     };
-    const mb = document.getElementById('e-mb').value;
-    if(mb) body.data_mb = mb;
-
+    const mb=document.getElementById('e-mb').value;
+    if(mb) body.data_mb=mb;
     try {
-      await fetch(API+'/admin/bundle/'+id, {
-        method:'PUT',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify(body)
-      });
+      await authFetch(API+'/admin/bundle/'+id,{method:'PUT',body:JSON.stringify(body)});
       showToast('Bundle updated!');
       closeModal();
       loadBundles();
-    } catch(e){
-      showToast('Failed to update', false);
-    }
+    } catch(e){ if(e.message!=='Unauthorized') showToast('Failed to update',false); }
   }
 
   async function deleteBundle(id){
-    if(!confirm('Delete this bundle? This cannot be undone.')) return;
+    if(!confirm('Delete this bundle?')) return;
     try {
-      await fetch(API+'/admin/bundle/'+id, {method:'DELETE'});
+      await authFetch(API+'/admin/bundle/'+id,{method:'DELETE'});
       showToast('Bundle deleted');
       loadBundles();
-    } catch(e){
-      showToast('Failed to delete', false);
-    }
+    } catch(e){ if(e.message!=='Unauthorized') showToast('Failed to delete',false); }
   }
 
-  loadBundles();
+  if(savedToken) loadBundles();
 </script>
 </body>
 </html>
