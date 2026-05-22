@@ -1,4 +1,5 @@
 ﻿import os
+from functools import wraps
 from dotenv import load_dotenv
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env'))
 
@@ -12,6 +13,17 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
 CORS(app)
+
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "changeme")
+
+def require_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = request.headers.get("X-Admin-Token")
+        if token != ADMIN_PASSWORD:
+            return jsonify({"error": "Unauthorized"}), 401
+        return f(*args, **kwargs)
+    return decorated
 
 class Bundle(db.Model):
     __tablename__ = "bundles"
@@ -28,21 +40,6 @@ class Bundle(db.Model):
 def home():
     return {"message": "BundleIQ API Running"}
 
-@app.route("/debug/env")
-def debug_env():
-    return jsonify({
-        "password_length": len(ADMIN_PASSWORD),
-        "first_char": ADMIN_PASSWORD[0] if ADMIN_PASSWORD else "empty",
-        "is_default": ADMIN_PASSWORD == "changeme"
-    })
-
-@app.route("/admin/verify", methods=["POST"])
-def verify_admin():
-    token = request.headers.get("X-Admin-Token")
-    if token != ADMIN_PASSWORD:
-        return jsonify({"error": "Unauthorized"}), 401
-    return jsonify({"message": "OK"}), 200
-
 @app.route("/bundles")
 def get_bundles():
     bundles = Bundle.query.all()
@@ -57,7 +54,15 @@ def get_bundles():
         "bundle_type": b.bundle_type
     } for b in bundles])
 
+@app.route("/admin/verify", methods=["POST"])
+def verify_admin():
+    token = request.headers.get("X-Admin-Token")
+    if token != ADMIN_PASSWORD:
+        return jsonify({"error": "Unauthorized"}), 401
+    return jsonify({"message": "OK"}), 200
+
 @app.route("/admin/bundle", methods=["POST"])
+@require_auth
 def add_bundle():
     d = request.json
     mb = float(d["data_mb"])
@@ -75,6 +80,7 @@ def add_bundle():
     return jsonify({"message": "Bundle added", "id": b.id})
 
 @app.route("/admin/bundle/<int:bundle_id>", methods=["PUT"])
+@require_auth
 def update_bundle(bundle_id):
     b = Bundle.query.get_or_404(bundle_id)
     d = request.json
@@ -90,6 +96,7 @@ def update_bundle(bundle_id):
     return jsonify({"message": "Bundle updated"})
 
 @app.route("/admin/bundle/<int:bundle_id>", methods=["DELETE"])
+@require_auth
 def delete_bundle(bundle_id):
     b = Bundle.query.get_or_404(bundle_id)
     db.session.delete(b)
