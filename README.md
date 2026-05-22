@@ -4,9 +4,9 @@ A full-stack web application that compares prepaid data bundle prices across all
 
 ## Live Demo
 
-- **App:** https://bundleiq.onrender.com
+- **App:** https://bundleiq-xk7b.onrender.com
 - **API:** https://bundleiq-api.onrender.com/bundles
-- **Admin:** https://bundleiq.onrender.com/admin.html
+- **Admin:** https://bundleiq-xk7b.onrender.com/admin.html
 
 ## What It Does
 
