@@ -42,7 +42,15 @@
     .section-label{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;display:flex;align-items:center;gap:6px}
 
     .network-cards{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:1.5rem}
-    @media(max-width:640px){.network-cards{grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:640px){
+      .network-cards{grid-template-columns:repeat(3,1fr)}
+      th,td{padding:8px 10px;font-size:11px}
+      .data-size{font-size:12px}
+      .price-tag{font-size:12px}
+      .net-pill{font-size:10px;padding:3px 6px}
+      .type-badge{font-size:9px;padding:2px 6px}
+      .best-tag{font-size:9px;padding:2px 6px}
+    }
     .net-card{background:var(--surface);border:2px solid var(--border);border-radius:14px;padding:14px 10px;text-align:center;cursor:pointer;transition:all 0.2s;box-shadow:var(--shadow)}
     .net-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.12)}
     .net-card.active{border-color:var(--card-color,#185FA5);box-shadow:0 0 0 3px color-mix(in srgb,var(--card-color,#185FA5) 20%,transparent)}
@@ -78,11 +86,11 @@
     .stat-value{font-size:20px;font-weight:800;color:var(--text)}
     .stat-sub{font-size:11px;color:var(--text2);margin-top:3px}
 
-    .table-wrap{background:var(--surface);border-radius:16px;border:1px solid var(--border);overflow:hidden;box-shadow:var(--shadow);margin-bottom:2rem}
+    .table-wrap{background:var(--surface);border-radius:16px;border:1px solid var(--border);overflow-x:auto;box-shadow:var(--shadow);margin-bottom:2rem;-webkit-overflow-scrolling:touch}
     .table-top{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:var(--surface2)}
     .table-top h2{font-size:14px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px}
     .result-count{font-size:12px;color:var(--text2);background:var(--bg);padding:3px 10px;border-radius:20px}
-    table{width:100%;border-collapse:collapse;font-size:13px}
+    table{width:100%;border-collapse:collapse;font-size:13px;min-width:700px}
     thead{background:var(--surface2)}
     th{padding:10px 14px;text-align:left;font-weight:700;color:var(--text2);font-size:11px;text-transform:uppercase;letter-spacing:0.04em;border-bottom:1px solid var(--border)}
     th i{margin-right:4px;font-size:10px}
