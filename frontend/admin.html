@@ -214,36 +214,24 @@
 
   // LOGIN
   function doLogin(){
-    const pwd = document.getElementById('login-input').value;
-    if(!pwd){ return; }
-    ADMIN_TOKEN = pwd;
-    // Test the token by making a real request
-    fetch(API+'/bundles')
-      .then(r=>r.json())
-      .then(data=>{
-        // Try an admin request to verify password
-        return fetch(API+'/admin/bundle/0', {
-          method:'DELETE',
-          headers:{'X-Admin-Token': ADMIN_TOKEN}
-        });
-      })
-      .then(r=>{
-        if(r.status === 404 || r.status === 200){
-          // 404 means bundle not found but auth passed
-          sessionStorage.setItem('bundleiq-token', ADMIN_TOKEN);
-          document.getElementById('login-screen').classList.remove('show');
-          loadBundles();
-        } else if(r.status === 401){
-          showLoginError();
-        }
-      })
-      .catch(()=>{
-        // If network error just try to proceed
-        sessionStorage.setItem('bundleiq-token', ADMIN_TOKEN);
-        document.getElementById('login-screen').classList.remove('show');
-        loadBundles();
-      });
-  }
+  const pwd = document.getElementById('login-input').value;
+  if(!pwd){ return; }
+  fetch(API+'/admin/verify', {
+    method: 'POST',
+    headers: {'X-Admin-Token': pwd}
+  })
+  .then(r=>{
+    if(r.status === 200){
+      ADMIN_TOKEN = pwd;
+      sessionStorage.setItem('bundleiq-token', pwd);
+      document.getElementById('login-screen').classList.remove('show');
+      loadBundles();
+    } else {
+      showLoginError();
+    }
+  })
+  .catch(()=>showLoginError());
+}
 
   function showLoginError(){
     const err = document.getElementById('login-error');
