@@ -28,6 +28,13 @@ class Bundle(db.Model):
 def home():
     return {"message": "BundleIQ API Running"}
 
+@app.route("/admin/verify", methods=["POST"])
+def verify_admin():
+    token = request.headers.get("X-Admin-Token")
+    if token != ADMIN_PASSWORD:
+        return jsonify({"error": "Unauthorized"}), 401
+    return jsonify({"message": "OK"}), 200
+
 @app.route("/bundles")
 def get_bundles():
     bundles = Bundle.query.all()
