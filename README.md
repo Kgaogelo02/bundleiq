@@ -22,7 +22,7 @@ A full-stack web application that compares prepaid data bundle prices across all
 
 ## Screenshots
 
-> App running at https://bundleiq.onrender.com
+> App running at https://bundleiq-xk7b.onrender.com
 
 ## Tech Stack
 
