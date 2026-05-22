@@ -1,6 +1,6 @@
-# BundleIQ
+# BundleIQ — South Africa Data Bundle Comparison App
 
-A full-stack web application that compares prepaid data bundle prices across all 4 major South African mobile networks. Built to help South Africans stop overpaying for mobile data.
+A full-stack web application that compares prepaid data bundle prices across all 4 major South African mobile networks in real time. Built to help South Africans stop overpaying for mobile data.
 
 ## Live Demo
 
@@ -8,21 +8,27 @@ A full-stack web application that compares prepaid data bundle prices across all
 - **API:** https://bundleiq-api.onrender.com/bundles
 - **Admin:** https://bundleiq-xk7b.onrender.com/admin.html
 
-## What It Does
+## Networks Covered
 
-- Compares data bundles across Vodacom, MTN, Cell C and Telkom
-- Sorts results by best value — lowest cost per MB first
-- Filters by bundle type: Monthly, Daily, Weekly, Night, Social, NXT LVL, Hourly
+| Network | Known For |
+|---------|-----------|
+| Vodacom | SA's largest network, NXT LVL specials |
+| MTN | Strong promos, TikTok and night bundles |
+| Cell C | Budget friendly monthly bundles |
+| Telkom | Cheapest cost per GB in SA |
+
+## Current Features
+
+- Compare data bundles across all 4 networks
+- Filter by bundle type — Monthly, Daily, Weekly, Night, Social, NXT LVL, Hourly
 - Search by data size, network or bundle name
-- Shows summary cards: best deal, most data, best validity, savings percentage
-- Dark mode toggle that remembers your preference
-- Admin panel to add, edit or delete bundles
+- Ranked results sorted by best value (cost per MB)
+- Summary cards showing best deal, most data, best validity and savings percentage
+- Dark mode toggle with saved preference
+- Admin panel — password protected via backend authentication
 - Auto scraper that runs every day at 7AM to keep prices updated
-- Fully responsive on mobile and desktop
-
-## Screenshots
-
-> App running at https://bundleiq-xk7b.onrender.com
+- Fully responsive — works on mobile and desktop
+- Font Awesome icons throughout — no emojis in code
 
 ## Tech Stack
 
@@ -72,11 +78,12 @@ bundleiq/
 |--------|----------|-------------|
 | GET | /bundles | Get all bundles |
 | GET | / | API health check |
+| POST | /admin/verify | Verify admin password |
 | POST | /admin/bundle | Add a new bundle |
 | PUT | /admin/bundle/\<id\> | Update a bundle by ID |
 | DELETE | /admin/bundle/\<id\> | Delete a bundle by ID |
 
-## Local Setup
+## Setup Instructions
 
 ### 1. Clone the repository
 
@@ -105,6 +112,7 @@ Create a file called `.env` inside the `backend` folder:
 
 ```
 DATABASE_URL=postgresql://your_user:your_password@your_host:5432/your_db
+ADMIN_PASSWORD=your_admin_password
 ```
 
 ### 5. Run the backend
@@ -121,7 +129,7 @@ python seed_real.py
 
 ### 7. Open the frontend
 
-Open `frontend/index.html` in your browser using Ctrl+O.
+Open `frontend/index.html` in your browser.
 
 ## Deployment
 
@@ -130,7 +138,7 @@ Open `frontend/index.html` in your browser using Ctrl+O.
 - Root Directory: `backend`
 - Build Command: `pip install -r requirements.txt`
 - Start Command: `gunicorn run:app`
-- Environment Variable: `DATABASE_URL`
+- Environment Variables: `DATABASE_URL`, `ADMIN_PASSWORD`
 
 ### Frontend — Render Static Site
 - Root Directory: `frontend`
@@ -142,47 +150,52 @@ Open `frontend/index.html` in your browser using Ctrl+O.
 - Region: Frankfurt EU Central
 - Connection: Session Pooler (IPv4 compatible)
 
+## Security
+
+- Admin password is stored as an environment variable on Render — never visible in code
+- All admin routes require a valid `X-Admin-Token` header verified by the backend
+- `.env` file is excluded from GitHub via `.gitignore`
+
 ## Automatic Price Updates
 
 A Windows Scheduled Task runs `scraper.py` every day at 7AM automatically.
 
-To run the scraper manually:
+To run manually:
 
 ```bash
 python backend/scraper.py
 ```
 
-## Admin Panel
+## Roadmap
 
-Access at `/admin.html` — password protected.
+### Phase 2 — More Useful Features
+- Coverage map showing best signal per province
+- Price history tracking — see when networks changed prices
+- Bundle calculator — enter daily data usage and get a recommendation
+- Favourites — save bundles you like
 
-Features:
-- View all bundles with stats per network
-- Add new bundles with automatic cost per MB calculation
-- Edit any bundle price, name, validity or type
-- Delete outdated bundles
-- Search and filter bundles
+### Phase 3 — Make It a Business
+- SMS and email alerts when a network drops prices or adds a special
+- User accounts with personalised bundle recommendations
+- Network reviews — users rate speed and coverage
+- Affiliate links to network websites to earn commission
 
-## Networks Covered
+### Phase 4 — Expand Beyond Data
+- Airtime price comparison across networks
+- Fibre package comparison — Openserve, Vumatel, Frogfoot
+- Load shedding schedule integration
+- Prepaid electricity rate comparison by municipality
 
-| Network | Known For |
-|---------|-----------|
-| Vodacom | SA's largest network, NXT LVL specials |
-| MTN | Strong promos, TikTok and night bundles |
-| Cell C | Budget friendly monthly bundles |
-| Telkom | Cheapest cost per GB in SA |
-
-## Environment Variables
-
-| Variable | Description |
-|----------|-------------|
-| DATABASE_URL | Full PostgreSQL connection string |
+### Phase 5 — Mobile App
+- Convert to React Native app for Android and iOS
+- Push notifications for daily best deal alerts
+- Home screen widget showing today's best bundle
 
 ## Author
 
-**Mabutsi Kgaogelo**
+**Mabutsi Kgaogelo Kgagara**
 
-Built BundleIQ to solve a real problem — South Africans constantly compare data prices but had no clean tool to do it in one place.
+Built BundleIQ to solve a real problem — South Africans constantly compare data prices but had no clean, accurate tool to do it in one place.
 
 - GitHub: https://github.com/Kgaogelo02
 
