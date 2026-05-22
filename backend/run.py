@@ -28,6 +28,14 @@ class Bundle(db.Model):
 def home():
     return {"message": "BundleIQ API Running"}
 
+@app.route("/debug/env")
+def debug_env():
+    return jsonify({
+        "password_length": len(ADMIN_PASSWORD),
+        "first_char": ADMIN_PASSWORD[0] if ADMIN_PASSWORD else "empty",
+        "is_default": ADMIN_PASSWORD == "changeme"
+    })
+
 @app.route("/admin/verify", methods=["POST"])
 def verify_admin():
     token = request.headers.get("X-Admin-Token")
